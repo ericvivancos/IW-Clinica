@@ -1,11 +1,32 @@
 version: "3.8"
 services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clinicdb
+    volumes:
+      - ./clinic-backend/db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   backend:
     build:
       context: ./clinic-backend
       dockerfile: Dockerfile
+    container_name: backend_container
     ports:
       - "8080:8080"
+    volumes:
+      - ./clinic-backend:/app # Monta el código fuente local
+      - /app/target # Para evitar problemas con archivos generados
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/clinicdb
       SPRING_DATASOURCE_USERNAME: root
@@ -17,20 +38,26 @@ services:
     build:
       context: ./clinic-frontend
       dockerfile: Dockerfile
+    container_name: frontend_container
     ports:
       - "3000:3000"
+    volumes:
+      - ./clinic-frontend:/app # Monta el código fuente local
+      - /app/node_modules # Evita conflictos con los módulos de Node.js
     stdin_open: true
     tty: true
 
-  db:
-    image: mysql:8.0
+
+  
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
     ports:
-      - "3306:3306"
+      - "8081:80"
     environment:
+      PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: clinicdb
-    volumes:
-      - db_data:/var/lib/mysql
 
 volumes:
   db_data:

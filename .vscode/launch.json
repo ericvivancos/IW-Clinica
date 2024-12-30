@@ -9,6 +9,16 @@
             "projectName": "clinic-backend",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ClinicBackendApplication<clinic-backend>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.clinica.clinic_backend.ClinicBackendApplication",
+            "projectName": "clinic-backend",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
