@@ -7,3 +7,24 @@ Content-Type: application/json
     "contrasena": "password123",
     "rol": "CLIENTE"
 }
+
+### Iniciar Sesión
+POST http://localhost:8080/api/usuarios/login
+Content-Type: application/json
+
+{
+    "email": "juan.perez@example.com",
+    "contrasena": "password123"
+}
+
+### Probar Envío de Correo de Restablecimiento de Contraseña
+POST http://localhost:8080/api/emails/restablecer-contrasena
+Content-Type: application/json
+
+{
+    "destinatario": "ericviancos@gmail.com",
+    "token": "12345abcde"
+}
+
+
+

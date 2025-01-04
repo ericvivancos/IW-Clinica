@@ -29,10 +29,10 @@ public class Usuario {
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String contrasena;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RolConverter.class)
     @Column(nullable = false)
     private Rol rol = Rol.CLIENTE; // Rol por defecto
-
+    
     @Column(nullable = false)
     private Boolean activo = true;
 

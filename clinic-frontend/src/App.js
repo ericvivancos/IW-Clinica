@@ -6,9 +6,15 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
+import Logout from "./components/Logout";
+import Dashboard from "./pages/Dashboard";
+import { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
+import ListaUsuarios from "./components/Administradores/Usuarios/ListaUsuarios";
 
 const App = () => {
     return (
+        <AuthProvider>
         <Router>
             <Navbar />
             <div className="min-h-[calc(100vh-100px)]">
@@ -16,11 +22,15 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/logout" element={<Logout />} />
                     <Route path="/register" element={<Register/>}/>
+                    <Route path="/dashboard" element={<Dashboard/>}/>
+                    <Route path="/usuarios" element={<PrivateRoute requiredRole="ADMINISTRADOR"><ListaUsuarios/></PrivateRoute>}/>
                 </Routes>
             </div>
             <Footer />
         </Router>
+        </AuthProvider>
     );
 };
 

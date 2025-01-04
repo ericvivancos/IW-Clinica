@@ -1,25 +1,69 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
+    const { authenticated, role, logout } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logout();
+        window.location.href = "/login"; // Redirige al login tras cerrar sesión
+    };
+
     return (
-        <nav className="bg-blue-500 text-white p-4 flex justify-between items-center">
-            <ul className="flex space-x-4">
-                <li><Link to="/" className="hover:underline">Inicio</Link></li>
-                <li><Link to="/contact" className="hover:underline">Contacto</Link></li>
-            </ul>
-            <Link
-                to="/register"
-                className="bg-white text-blue-500 px-4 py-2 rounded hover:bg-gray-200"
-            >
-                Registrarse
-            </Link>
-            <Link
-                to="/login"
-                className="bg-white text-blue-500 px-4 py-2 rounded hover:bg-gray-200"
-            >
-                Iniciar Sesión
-            </Link>
+        <nav className="bg-blue-500 p-4 text-white">
+            <div className="container mx-auto flex justify-between items-center">
+                <h1 className="text-lg font-bold">
+                    <Link to="/">Clínica Ejemplo</Link>
+                </h1>
+                <ul className="flex space-x-4">
+                    {/* Elementos comunes para todos */}
+                    <li>
+                        <Link to="/contact">Contacto</Link>
+                    </li>
+
+                    {authenticated ? (
+                        <>
+                            {/* Elementos para usuarios autenticados */}
+                            {role === "CLIENTE" && (
+                                <>
+                                    <li>
+                                        <Link to="/dashboard">Dashboard</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/perfil">Mi Perfil</Link>
+                                    </li>
+                                </>
+                            )}
+                            {role === "ADMINISTRADOR" && (
+                                <>
+                                    <li>
+                                        <Link to="/dashboard">Dashboard</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/usuarios">Usuarios</Link>
+                                    </li>
+                                </>
+                            )}
+                            <li>
+                                <button onClick={handleLogout} className="text-red-300 hover:text-red-500">
+                                    Cerrar Sesión
+                                </button>
+                            </li>
+                        </>
+                    ) : (
+                        <>
+                            {/* Elementos para usuarios no autenticados */}
+                            <li>
+                                <Link to="/login">Iniciar Sesión</Link>
+                            </li>
+                            <li>
+                                <Link to="/register">Registrarse</Link>
+                            </li>
+                        </>
+                    )}
+                </ul>
+            </div>
         </nav>
     );
 };
