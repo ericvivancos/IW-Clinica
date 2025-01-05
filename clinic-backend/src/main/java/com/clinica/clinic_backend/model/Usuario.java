@@ -1,5 +1,7 @@
 package com.clinica.clinic_backend.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -36,6 +38,13 @@ public class Usuario {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    // Campo para el token de restablecimiento
+    @Column(name = "token_restablecimiento")
+    private String tokenRestablecimiento;
+
+    // Campo para la expiración del token
+    @Column(name = "token_expiracion")
+    private LocalDateTime tokenExpiracion;
     // Enum interno para los roles
     public enum Rol {
         ADMINISTRADOR,

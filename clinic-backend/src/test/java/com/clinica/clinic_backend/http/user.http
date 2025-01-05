@@ -22,8 +22,8 @@ POST http://localhost:8080/api/emails/restablecer-contrasena
 Content-Type: application/json
 
 {
-    "destinatario": "ericviancos@gmail.com",
-    "token": "12345abcde"
+    "destinatario": "ericviancos@gmail.com"
+
 }
 
 

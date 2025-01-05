@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
     const navigate = useNavigate();
-    const {login} = useContext(AuthContext);
+    const { login } = useContext(AuthContext);
     const [formData, setFormData] = useState({ email: "", contrasena: "" });
     const [error, setError] = useState("");
 
@@ -19,15 +19,14 @@ const Login = () => {
         try {
             const response = await loginUser(formData); // Envía los datos al backend
             setError(""); // Limpia cualquier error previo
-            // Actualiza el contexto con el token y rol
-            login(response.token, response.role);
+            login(response.token, response.role); // Actualiza el contexto con el token y rol
             navigate("/dashboard"); // Redirige al usuario al dashboard
         } catch (error) {
             if (error.response && error.response.data) {
-                // Extrae el mensaje de error del backend
-                const errorMessage = typeof error.response.data === "string"
-                    ? error.response.data
-                    : error.response.data.message || "Error desconocido";
+                const errorMessage =
+                    typeof error.response.data === "string"
+                        ? error.response.data
+                        : error.response.data.message || "Error desconocido";
                 setError(errorMessage);
             } else {
                 setError("Ocurrió un error inesperado. Por favor, inténtelo de nuevo.");
@@ -38,10 +37,7 @@ const Login = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <h1 className="text-2xl font-bold text-blue-500 mb-4">Iniciar Sesión</h1>
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white p-6 rounded shadow-md w-80"
-            >
+            <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80">
                 <div className="mb-4">
                     <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
                         Correo Electrónico
@@ -49,7 +45,7 @@ const Login = () => {
                     <input
                         type="email"
                         id="email"
-                        name="email" // Asegúrate de incluir el atributo "name"
+                        name="email"
                         value={formData.email}
                         onChange={handleChange}
                         className="w-full border border-gray-300 p-2 rounded"
@@ -63,7 +59,7 @@ const Login = () => {
                     <input
                         type="password"
                         id="contrasena"
-                        name="contrasena" // Asegúrate de incluir el atributo "name"
+                        name="contrasena"
                         value={formData.contrasena}
                         onChange={handleChange}
                         className="w-full border border-gray-300 p-2 rounded"
@@ -78,6 +74,9 @@ const Login = () => {
                     Iniciar Sesión
                 </button>
             </form>
+            <Link to="/recuperar-contrasena" className="mt-4 text-blue-500 hover:underline">
+                ¿Olvidaste tu contraseña?
+            </Link>
         </div>
     );
 };

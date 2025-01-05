@@ -26,9 +26,9 @@ const Register = () => {
             alert("Usuario registrado exitosamente.");
             navigate("/login"); // Redirigir tras registro exitoso
         } catch (error) {
-            if (error.response && error.response.data) {
+            if (error.response.data.errors[0].defaultMessage) {
                 // Extraer el mensaje del error
-                const errorMessage = error.response.data || "Error desconocido";
+                const errorMessage = error.response.data.errors[0].defaultMessage || "Error desconocido";
                 setError(errorMessage);
             } else {
                 setError("Ocurrió un error al registrar el usuario. Por favor, inténtelo de nuevo.");

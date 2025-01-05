@@ -65,5 +65,51 @@ export const eliminarUsuario = async (id) => {
     });
     return response.data;
 };
+export const enviarCorreoRestablecimiento = async (email) => {
+    console.log(email);
+    const response = await axios.post(`${API_BASE_URL}/emails/restablecer-contrasena`, {
+        destinatario: email
+    });
+    return response.data;
+};
+// Eliminar Usuario
+export const validarToken = async (token) => {
+    const response = await axios.post(`${API_BASE_URL}/usuarios/validar-token`, null, {
+        params: { token },
+    });
+    return response.data;
+};
+export const restablecerContrasena = async (token, nuevaContrasena) => {
+    const response = await axios.post(`${API_BASE_URL}/usuarios/restablecer-contrasena`, {
+        token,
+        nuevaContrasena,
+    });
+    return response.data;
+};
+export const obtenerPerfil = async () => {
+    const response = await axios.get(`${API_BASE_URL}/usuarios/perfil`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+};
+export const actualizarPerfil = async (formData) => {
+    const response = await axios.post(`${API_BASE_URL}/usuarios/perfil`, formData, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+};
+export const getClientes = async () => {
+    const response = await axios.get(`${API_BASE_URL}/usuarios/clientes`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+};
+
 
 

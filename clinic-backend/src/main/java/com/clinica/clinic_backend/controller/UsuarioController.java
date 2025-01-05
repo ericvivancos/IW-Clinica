@@ -4,7 +4,9 @@ import com.clinica.clinic_backend.dto.EditarUsuarioDTO;
 import com.clinica.clinic_backend.dto.LoginRequestDTO;
 import com.clinica.clinic_backend.dto.LoginResponseDTO;
 import com.clinica.clinic_backend.dto.RegistroUsuarioDTO;
+import com.clinica.clinic_backend.dto.RestablecerContraseñaRequestDTO;
 import com.clinica.clinic_backend.model.Usuario;
+import com.clinica.clinic_backend.security.JwtUtils;
 import com.clinica.clinic_backend.service.UsuarioService;
 import jakarta.validation.Valid;
 
@@ -21,6 +23,8 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @PostMapping("/registro")
     public ResponseEntity<?> registrarUsuario(@Valid @RequestBody RegistroUsuarioDTO registroUsuarioDTO) {
@@ -104,6 +108,68 @@ public class UsuarioController {
                                  .body("Ocurrió un error al eliminar el usuario.");
         }
     }
+    @PostMapping("/validar-token")
+    public ResponseEntity<?> validarToken(@RequestParam String token) {
+        try {
+            usuarioService.validarTokenRestablecimiento(token);
+            return ResponseEntity.ok("Token válido.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
+    @PostMapping("/restablecer-contrasena")
+    public ResponseEntity<?> restablecerContrasena(@RequestBody RestablecerContraseñaRequestDTO request) {
+        try {
+            usuarioService.restablecerContrasena(request.getToken(), request.getNuevaContrasena());
+            return ResponseEntity.ok("Contraseña actualizada exitosamente.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/perfil")
+    public ResponseEntity<?> obtenerPerfil(@RequestHeader("Authorization") String authHeader) {
+        try {
+            // Extraer el token del encabezado
+            String token = authHeader.replace("Bearer ", "");
+    
+            // Obtener el email desde los claims del token
+            String email = jwtUtils.getClaims(token).getSubject();
+            System.out.println(email);
+            // Buscar el usuario por email
+            Usuario usuario = usuarioService.obtenerPerfil(email);
+            return ResponseEntity.ok(usuario);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el perfil.");
+        }
+    }
+    
+    @PostMapping("/perfil")
+    public ResponseEntity<?> editarPerfil(@RequestBody EditarUsuarioDTO usuarioDTO, @RequestHeader("Authorization") String authHeader) {
+        try {
+           // Extraer el token del encabezado
+           String token = authHeader.replace("Bearer ", "");
+    
+           // Obtener el email desde los claims del token
+           String emailActual = jwtUtils.getClaims(token).getSubject();
+            Usuario usuarioActualizado = usuarioService.editarPerfil(emailActual, usuarioDTO);
+            return ResponseEntity.ok(usuarioActualizado);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/clientes")
+    public ResponseEntity<?> obtenerClientes() {
+        try {
+            // Llama al servicio para obtener solo los clientes
+            List<Usuario> clientes = usuarioService.obtenerClientes();
+            return ResponseEntity.ok(clientes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error al obtener la lista de clientes.");
+        }
+    }
 
 }

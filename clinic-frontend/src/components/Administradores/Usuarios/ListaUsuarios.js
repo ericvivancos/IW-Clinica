@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUsuarios, registerUser, editarUsuario , eliminarUsuario} from "../../../services/api";
+import { getUsuarios, registerUser, editarUsuario , eliminarUsuario, enviarCorreoRestablecimiento} from "../../../services/api";
 import ModalCrearUsuario from "../../Modals/ModalCrearUsuario"
 import ModalEditarUsuario from "../../Modals/ModalEditarUsuario";
 
@@ -35,8 +35,8 @@ const ListaUsuarios = () => {
             setUsuarios(data);
             setMostrarModalCrear(false); // Cierra el modal
         } catch (error) {
-            console.error("Error al crear el usuario:", error);
-            alert("Error al crear el usuario. Verifica los datos.");
+            console.error("Error al crear el usuario:", error.response.data.errors[0].defaultMessage);
+            alert("Error al crear el usuario.", error.response.data.errors[0].defaultMessage);
         }
     };
     const handleEditarUsuario = async (id, formData) => {
@@ -47,8 +47,8 @@ const ListaUsuarios = () => {
             setMostrarModalEditar(false);
             alert("Usuario actualizado exitosamente.");
         } catch (error) {
-            console.error("Error al editar el usuario:", error.message);
-            alert(error.message || "Error al editar el usuario.");
+            console.error("Error al editar el usuario:", error.response.data.errors[0].defaultMessage);
+            alert("Error al editar el usuario.", error.response.data.errors[0].defaultMessage);
         }
     };
     const handleEliminarUsuario = async (id) => {
@@ -63,6 +63,20 @@ const ListaUsuarios = () => {
         } catch (error) {
             console.error("Error al eliminar el usuario:", error.message);
             alert(error.response?.data || "Error al eliminar el usuario.");
+        }
+    };
+    const handleRestablecerContrasena = async (email) => {
+        const confirmacion = window.confirm(
+            `¿Estás seguro de que deseas restablecer la contraseña de ${email}?`
+        );
+        if (!confirmacion) return;
+    
+        try {
+            await enviarCorreoRestablecimiento(email); // Llama al servicio para generar el enlace
+            alert("Correo de restablecimiento enviado exitosamente.");
+        } catch (error) {
+            console.error("Error al restablecer la contraseña:", error.message);
+            alert(error.response?.data || "Error al restablecer la contraseña.");
         }
     };
     
@@ -129,7 +143,7 @@ const ListaUsuarios = () => {
             ) : error ? (
                 <p className="text-red-500">{error}</p>
             ) : (
-                <table className="w-full border-collapse border border-gray-300">
+                <table className="w-full border-collapse border border-gray-300 text-center">
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="border border-gray-300 p-2">Nombre</th>
@@ -141,8 +155,8 @@ const ListaUsuarios = () => {
                     </thead>
                     <tbody>
                         {usuariosFiltrados.map((usuario) => (
-                            <tr key={usuario.id}>
-                                <td className="border border-gray-300 p-2">{usuario.nombre}</td>
+                            <tr c key={usuario.id}>
+                                <td className="border border-gray-300 p-2 ">{usuario.nombre}</td>
                                 <td className="border border-gray-300 p-2">{usuario.email}</td>
                                 <td className="border border-gray-300 p-2">{usuario.rol}</td>
                                 <td className="border border-gray-300 p-2">
@@ -154,6 +168,12 @@ const ListaUsuarios = () => {
                                     </button>
                                     <button  onClick={() => handleEliminarUsuario(usuario.id)} className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 ml-2">
                                         Eliminar
+                                    </button>
+                                    <button
+                                        onClick={() => handleRestablecerContrasena(usuario.email)}
+                                        className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 ml-2"
+                                    >
+                                        Restablecer Contraseña
                                     </button>
                                 </td>
                             </tr>

@@ -9,8 +9,12 @@ import Login from "./pages/Login";
 import Logout from "./components/Logout";
 import Dashboard from "./pages/Dashboard";
 import { AuthProvider } from "./context/AuthContext";
+import RestablecerContrasena from "./pages/RestablecerContrasena";
 import PrivateRoute from "./components/PrivateRoute";
 import ListaUsuarios from "./components/Administradores/Usuarios/ListaUsuarios";
+import PerfilUsuario from "./pages/PerfilUsuario";
+import RecuperarContrasena from "./components/RecuperarContrasena";
+import ListaClientes from "./components/Recepcionista/Clientes/ListaClientes";
 
 const App = () => {
     return (
@@ -25,7 +29,11 @@ const App = () => {
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/dashboard" element={<Dashboard/>}/>
+                    <Route path="/restablecer-contrasena" element={<RestablecerContrasena />} />
+                    <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
+                    <Route path="/perfil" element={<PrivateRoute><PerfilUsuario/></PrivateRoute>}/>
                     <Route path="/usuarios" element={<PrivateRoute requiredRole="ADMINISTRADOR"><ListaUsuarios/></PrivateRoute>}/>
+                    <Route path="/clientes"  element={<PrivateRoute requiredRole="RECEPCIONISTA"><ListaClientes /></PrivateRoute>}/>
                 </Routes>
             </div>
             <Footer />

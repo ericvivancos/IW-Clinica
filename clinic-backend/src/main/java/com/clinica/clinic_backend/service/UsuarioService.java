@@ -8,7 +8,9 @@ import com.clinica.clinic_backend.model.Usuario;
 import com.clinica.clinic_backend.repository.UsuarioRepository;
 import com.clinica.clinic_backend.security.JwtUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -104,6 +106,55 @@ public class UsuarioService {
         // Eliminar el usuario
         usuarioRepository.delete(usuario);
     }
+    public String generarTokenRestablecimiento(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+
+        String token = UUID.randomUUID().toString();
+        usuario.setTokenRestablecimiento(token);
+        usuario.setTokenExpiracion(LocalDateTime.now().plusHours(24));
+
+        usuarioRepository.save(usuario);
+        return token;
+    }
+    public void validarTokenRestablecimiento(String token) {
+        Usuario usuario = usuarioRepository.findByTokenRestablecimiento(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token inválido o expirado."));
+
+        if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("El token ha expirado.");
+        }
+    }
+    public void restablecerContrasena(String token, String nuevaContrasena) {
+        Usuario usuario = usuarioRepository.findByTokenRestablecimiento(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token inválido o expirado."));
     
+        if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("El token ha expirado.");
+        }
+    
+        usuario.setContrasena(passwordEncoder.encode(nuevaContrasena));
+        usuario.setTokenRestablecimiento(null);
+        usuario.setTokenExpiracion(null);
+    
+        usuarioRepository.save(usuario);
+    }
+    public Usuario editarPerfil(String email, EditarUsuarioDTO usuarioDTO) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+    
+        // Actualizar solo los campos permitidos
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setEmail(usuarioDTO.getEmail());
+    
+        return usuarioRepository.save(usuario);
+    }
+    public Usuario obtenerPerfil(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+    }
+    public List<Usuario> obtenerClientes() {
+        return usuarioRepository.findByRol(Usuario.Rol.CLIENTE);
+    }
     
 }
