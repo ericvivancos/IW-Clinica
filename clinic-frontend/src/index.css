@@ -1,3 +1,26 @@
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.fc-event {
+    padding: 10px; /* Aumenta el espacio interno del evento */
+    font-size: 1.1rem; /* Aumenta el tamaño del texto */
+    background-color: #007bff; /* Color de fondo del evento */
+    color: white; /* Color del texto */
+    border-radius: 5px; /* Bordes redondeados */
+  }
+  
+  .fc-timegrid-slot {
+    height: 70px !important; /* Ajusta la altura de los slots */
+  }
+  
+  .fc-toolbar-title {
+    font-size: 1.5rem; /* Tamaño del título de la barra */
+  }
+  
+  .fc {
+    font-family: Arial, sans-serif; /* Fuente general */
+  }
+  

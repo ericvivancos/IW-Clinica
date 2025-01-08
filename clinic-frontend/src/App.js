@@ -15,7 +15,7 @@ import ListaUsuarios from "./components/Administradores/Usuarios/ListaUsuarios";
 import PerfilUsuario from "./pages/PerfilUsuario";
 import RecuperarContrasena from "./components/RecuperarContrasena";
 import ListaClientes from "./components/Recepcionista/Clientes/ListaClientes";
-
+import CalendarioReservas from "./components/Reservas/CalendarioReservas";
 const App = () => {
     return (
         <AuthProvider>
@@ -34,6 +34,7 @@ const App = () => {
                     <Route path="/perfil" element={<PrivateRoute><PerfilUsuario/></PrivateRoute>}/>
                     <Route path="/usuarios" element={<PrivateRoute requiredRole="ADMINISTRADOR"><ListaUsuarios/></PrivateRoute>}/>
                     <Route path="/clientes"  element={<PrivateRoute requiredRole="RECEPCIONISTA"><ListaClientes /></PrivateRoute>}/>
+                    <Route path="/reservas" element={<CalendarioReservas />} />
                 </Routes>
             </div>
             <Footer />

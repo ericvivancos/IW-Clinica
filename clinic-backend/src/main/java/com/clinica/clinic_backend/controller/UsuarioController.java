@@ -37,6 +37,7 @@ public class UsuarioController {
             return ResponseEntity.status(500).body("Ocurrió un error inesperado. Por favor, inténtelo más tarde.");
         }
     }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         try {
@@ -47,9 +48,10 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            return ResponseEntity.status(500).body( "Ocurrió un error inesperado. Por favor, inténtelo más tarde.");
+            return ResponseEntity.status(500).body("Ocurrió un error inesperado. Por favor, inténtelo más tarde.");
         }
     }
+
     @GetMapping("/list")
     public ResponseEntity<?> obtenerUsuarios() {
         try {
@@ -63,9 +65,10 @@ public class UsuarioController {
 
             // Devuelve una respuesta de error genérica al cliente
             return ResponseEntity.status(500)
-                                 .body("Ocurrió un error al obtener la lista de usuarios. Por favor, inténtelo más tarde.");
+                    .body("Ocurrió un error al obtener la lista de usuarios. Por favor, inténtelo más tarde.");
         }
     }
+
     @GetMapping("/search")
     public ResponseEntity<?> buscarUsuarios(@RequestParam(value = "query", required = false) String query) {
         try {
@@ -74,16 +77,17 @@ public class UsuarioController {
                 List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
                 return ResponseEntity.ok(usuarios);
             }
-        
+
             // Busca usuarios por nombre o email
             List<Usuario> usuarios = usuarioService.buscarUsuariosPorNombreOEmail(query);
             return ResponseEntity.ok(usuarios);
         } catch (Exception e) {
             System.err.println("Error al buscar usuarios: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Ocurrió un error al buscar los usuarios.");
+                    .body("Ocurrió un error al buscar los usuarios.");
         }
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> editarUsuario(@PathVariable Long id, @Valid @RequestBody EditarUsuarioDTO usuarioDTO) {
         try {
@@ -93,9 +97,10 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Ocurrió un error al editar el usuario.");
+                    .body("Ocurrió un error al editar el usuario.");
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         try {
@@ -105,9 +110,10 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Ocurrió un error al eliminar el usuario.");
+                    .body("Ocurrió un error al eliminar el usuario.");
         }
     }
+
     @PostMapping("/validar-token")
     public ResponseEntity<?> validarToken(@RequestParam String token) {
         try {
@@ -127,12 +133,13 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/perfil")
     public ResponseEntity<?> obtenerPerfil(@RequestHeader("Authorization") String authHeader) {
         try {
             // Extraer el token del encabezado
             String token = authHeader.replace("Bearer ", "");
-    
+
             // Obtener el email desde los claims del token
             String email = jwtUtils.getClaims(token).getSubject();
             System.out.println(email);
@@ -144,15 +151,16 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el perfil.");
         }
     }
-    
+
     @PostMapping("/perfil")
-    public ResponseEntity<?> editarPerfil(@RequestBody EditarUsuarioDTO usuarioDTO, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> editarPerfil(@RequestBody EditarUsuarioDTO usuarioDTO,
+            @RequestHeader("Authorization") String authHeader) {
         try {
-           // Extraer el token del encabezado
-           String token = authHeader.replace("Bearer ", "");
-    
-           // Obtener el email desde los claims del token
-           String emailActual = jwtUtils.getClaims(token).getSubject();
+            // Extraer el token del encabezado
+            String token = authHeader.replace("Bearer ", "");
+
+            // Obtener el email desde los claims del token
+            String emailActual = jwtUtils.getClaims(token).getSubject();
             Usuario usuarioActualizado = usuarioService.editarPerfil(emailActual, usuarioDTO);
             return ResponseEntity.ok(usuarioActualizado);
         } catch (IllegalArgumentException e) {
@@ -160,15 +168,28 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/clientes")
-    public ResponseEntity<?> obtenerClientes() {
+    public ResponseEntity<?> getClientes() {
         try {
             // Llama al servicio para obtener solo los clientes
-            List<Usuario> clientes = usuarioService.obtenerClientes();
+            List<Usuario> clientes = usuarioService.obtenerUsuariosPorRol(Usuario.Rol.CLIENTE);
             return ResponseEntity.ok(clientes);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error al obtener la lista de clientes.");
+                    .body("Error al obtener la lista de clientes.");
+        }
+    }
+
+    @GetMapping("/profesionales")
+    public ResponseEntity<?> getProfesionales() {
+        try {
+            // Llama al servicio para obtener solo los profesionales
+            List<Usuario> profesionales = usuarioService.obtenerUsuariosPorRol(Usuario.Rol.PROFESIONAL);
+            return ResponseEntity.ok(profesionales);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener la lista de profesionales.");
         }
     }
 

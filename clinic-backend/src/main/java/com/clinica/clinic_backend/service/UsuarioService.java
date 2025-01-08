@@ -153,8 +153,8 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
     }
-    public List<Usuario> obtenerClientes() {
-        return usuarioRepository.findByRol(Usuario.Rol.CLIENTE);
+    public List<Usuario> obtenerUsuariosPorRol(Usuario.Rol rol) {
+        return usuarioRepository.findByRol(rol);
     }
     
 }
