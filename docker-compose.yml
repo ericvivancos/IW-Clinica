@@ -38,12 +38,15 @@ services:
     build:
       context: ./clinic-frontend
       dockerfile: Dockerfile
-    container_name: frontend_container
     ports:
-      - "3000:3000"
+      - "3000:3000" # Exponer el puerto 3000 para el frontend
     volumes:
-      - ./clinic-frontend:/app # Monta el código fuente local
-      - /app/node_modules # Evita problemas con dependencias
+      - ./clinic-frontend:/app # Monta el código fuente local para desarrollo
+      - /app/node_modules # Evitar conflictos con dependencias
+    environment:
+      CHOKIDAR_USEPOLLING: "true" # Necesario para desarrollo con React en Docker
+    stdin_open: true
+    tty: true
     depends_on:
       - backend
 
