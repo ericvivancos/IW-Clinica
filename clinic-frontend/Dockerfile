@@ -1,5 +1,5 @@
 # Usa una imagen base de Node.js
-FROM node:16-alpine
+FROM node:18.2-buster
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instala las dependencias
-RUN npm install --legacy-peer-deps
+RUN npm install 
 
 # Copia todo el código fuente
 COPY . .

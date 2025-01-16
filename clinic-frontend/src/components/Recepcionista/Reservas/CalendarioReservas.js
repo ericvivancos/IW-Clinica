@@ -56,6 +56,7 @@ const CalendarioReservas = () => {
 
     // Clic en un evento existente
     const handleEventClick = (info) => {
+        console.log(info);
         setSelectedEvent(info.event);
         setIsVerModalOpen(true);
     };
