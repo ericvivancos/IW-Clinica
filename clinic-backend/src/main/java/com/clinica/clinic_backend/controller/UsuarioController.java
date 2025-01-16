@@ -5,12 +5,15 @@ import com.clinica.clinic_backend.dto.LoginRequestDTO;
 import com.clinica.clinic_backend.dto.LoginResponseDTO;
 import com.clinica.clinic_backend.dto.RegistroUsuarioDTO;
 import com.clinica.clinic_backend.dto.RestablecerContraseñaRequestDTO;
+import com.clinica.clinic_backend.model.Reserva;
 import com.clinica.clinic_backend.model.Usuario;
 import com.clinica.clinic_backend.security.JwtUtils;
 import com.clinica.clinic_backend.service.UsuarioService;
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +35,9 @@ public class UsuarioController {
             Usuario usuario = usuarioService.registrarUsuario(registroUsuarioDTO);
             return ResponseEntity.ok(usuario);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage()); // Retorna el mensaje de error
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse); // Retorna el mensaje de error
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Ocurrió un error inesperado. Por favor, inténtelo más tarde.");
         }
@@ -190,6 +195,25 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al obtener la lista de profesionales.");
+        }
+    }
+    
+    @GetMapping("/proxima-cita")
+    public ResponseEntity<?> obtenerProximaCita(@RequestHeader("Authorization") String authHeader) {
+        try {
+            // Extraer el token del encabezado y obtener el email
+            String token = authHeader.replace("Bearer ", "");
+            String email = jwtUtils.getClaims(token).getSubject();
+
+            // Llamar al servicio para obtener la próxima cita del cliente
+            Reserva proximaCita = usuarioService.obtenerProximaCita(email);
+
+            return ResponseEntity.ok(proximaCita);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error al obtener la próxima cita.");
         }
     }
 

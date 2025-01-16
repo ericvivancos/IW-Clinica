@@ -200,3 +200,63 @@ export const eliminarReserva = async (idReserva) => {
       throw error.response?.data || "Error desconocido al pagar la reserva.";
   }
 };
+export const crearIntentoPago = async (monto) => {
+  const response = await axios.post(`${API_BASE_URL}/pagos/crear-intent`, { monto }, {
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+  });
+  return response.data;
+};
+
+export const obtenerProximaCita = async () => {
+  const response = await axios.get(`${API_BASE_URL}/usuarios/proxima-cita`, {
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+  });
+  return response.data;
+};
+export const getProximasCitas = async () => {
+  const response = await axios.get(`${API_BASE_URL}/reservas/proximas`, {
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+  });
+  return response.data;
+};
+
+export const obtenerCitasPendientesPago = async () => {
+  const response = await axios.get(`${API_BASE_URL}/reservas/pendientes-pago`, {
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+  });
+  return response.data;
+};
+
+export const obtenerResumenSalas = async () => {
+  const response = await axios.get(`${API_BASE_URL}/salas/resumen`, {
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+  });
+  return response.data;
+};
+export const obtenerEstadisticasGenerales = async () => {
+  const response = await axios.get(`${API_BASE_URL}/estadisticas/generales`, {
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+  });
+  return response.data;
+};
+
+export const obtenerResumenIngresos = async () => {
+  const response = await axios.get(`${API_BASE_URL}/pagos/resumen`, {
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+  });
+  return response.data;
+};

@@ -62,8 +62,8 @@ public class ReservaService {
 
                 // Calculamos el precio total
                 Duration duration = Duration.between(horaInicio, horaFin);
-                double horas = duration.toMinutes() / 60.0;
-                double precioTotal = Math.ceil(horas * 2 / 2 * servicio.getPrecioPorHora());
+                Double horas = duration.toMinutes() / 60.0;
+                Double precioTotal = Math.ceil(horas * 2 / 2 * servicio.getPrecioPorHora());
 
                 // Creamos la reserva
                 Reserva reserva = new Reserva();
@@ -113,6 +113,17 @@ public class ReservaService {
                 Reserva reserva = reservaRepository.findById(idReserva)
                         .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
                 reservaRepository.delete(reserva);
+            }
+            public List<Reserva> obtenerProximasCitasDelDia() {
+                LocalDate hoy = LocalDate.now();
+                LocalTime ahora = LocalTime.now();
+        
+                return reservaRepository.findByFechaAndHoraInicioAfterOrderByHoraInicio(
+                    hoy, ahora
+                );
+            }
+            public List<Reserva> obtenerReservasPendientesDePago() {
+                return reservaRepository.findByPagadaFalse();
             }
             
 }

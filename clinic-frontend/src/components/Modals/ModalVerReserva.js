@@ -89,6 +89,7 @@ const ModalVerReserva = ({ onClose, event, onPagar, onBorrar }) => {
                         Borrar
                     </button>
                 </div>
+                
             </div>
         </div>
     );

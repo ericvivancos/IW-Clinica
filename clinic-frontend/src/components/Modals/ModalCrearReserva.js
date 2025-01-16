@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { crearReserva,getClientes,getProfesionales,getSalas,getServicios } from "../../services/api"; // Servicio para interactuar con el backend
+import { crearReserva,getClientes,getProfesionales,getSalas,getServicios,obtenerPerfil,crearIntentoPago } from "../../services/api"; // Servicio para interactuar con el backend
 
-const ModalCrearReserva = ({ onClose, slot, onSave }) => {
+const ModalCrearReserva = ({ onClose, slot, onSave, rol }) => {
     const [formData, setFormData] = useState({
         idCliente: "", // Cliente preseleccionado si aplica
         idProfesional: "",
@@ -16,27 +16,68 @@ const ModalCrearReserva = ({ onClose, slot, onSave }) => {
     const [profesionales, setProfesionales] = useState([]);
     const [salas, setSalas] = useState([]);
     const [servicios, setServicios] = useState([]);
+    const [loading, setLoading] = useState(null);
+    const [total, setTotal] = useState(0);
 
     useEffect(() => {
         // Cargar opciones de clientes, profesionales, salas y servicios
-        const fetchOptions = async () => {
-            try {
-                const [clientesData, profesionalesData, salasData, serviciosData] = await Promise.all([
-                    getClientes(),
-                    getProfesionales(),
-                    getSalas(),
-                    getServicios(),
-                ]);
-                setClientes(clientesData);
-                setProfesionales(profesionalesData);
-                setSalas(salasData);
-                setServicios(serviciosData);
-            } catch (error) {
-                console.error("Error al cargar las opciones:", error);
+       
+            const fetchOptions = async () => {
+                try {
+                    const [clientesData, profesionalesData, salasData, serviciosData] = await Promise.all([
+                        getClientes(),
+                        getProfesionales(),
+                        getSalas(),
+                        getServicios(),
+                    ]);
+                    setClientes(clientesData);
+                    setProfesionales(profesionalesData);
+                    setSalas(salasData);
+                    setServicios(serviciosData);
+                } catch (error) {
+                    console.error("Error al cargar las opciones:", error);
+                }
+            };
+            fetchOptions();
+        
+        
+
+        if(rol === "CLIENTE") {
+            const fetchPerfil = async () => {
+                try {
+                    const perfil = await obtenerPerfil();
+                setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        idCliente: perfil.id.toString(), // Asegúrate de que el perfil devuelve el id del cliente
+                    }));
+                } catch (error) {
+                    console.error("Error al obtener el perfil del cliente:", error);
+                }
             }
+            fetchPerfil();
+        }
+    }, [rol]);
+
+    useEffect(() => {
+        // Actualizar el total dinámicamente
+        const calcularTotal = () => {
+            const servicioSeleccionado = servicios.find(
+                (servicio) => servicio.id.toString() === formData.idServicio
+            );
+            if (!servicioSeleccionado || !formData.horaInicio || !formData.horaFin) return;
+
+            // Convertir horas a formato Date para calcular duración
+            const horaInicio = new Date(`1970-01-01T${formData.horaInicio}:00`);
+            const horaFin = new Date(`1970-01-01T${formData.horaFin}:00`);
+            const duracionEnHoras = (horaFin - horaInicio) / (1000 * 60 * 60);
+
+            // Redondear a medias horas y calcular total
+            const duracionRedondeada = Math.ceil(duracionEnHoras * 2) / 2; // Ejemplo: 1.25 -> 1.5
+            setTotal(duracionRedondeada * servicioSeleccionado.precioPorHora);
         };
-        fetchOptions();
-    }, []);
+
+        calcularTotal();
+    }, [formData.idServicio, formData.horaInicio, formData.horaFin, servicios]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -44,7 +85,7 @@ const ModalCrearReserva = ({ onClose, slot, onSave }) => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = async (e) => {
+    const handleGuardarReserva = async (e) => {
         e.preventDefault();
         try {
             const nuevaReserva = await crearReserva(formData); // Llama al backend
@@ -58,33 +99,58 @@ const ModalCrearReserva = ({ onClose, slot, onSave }) => {
             alert("No se pudo crear la reserva. Por favor, revisa los datos.");
         }
     };
-
+    const handlePagarReserva = async () => {
+        setLoading(true);
+        try {
+            const response = await crearIntentoPago(total); // Total amount to be paid
+            const { clientSecret } = response;
+    
+            if (clientSecret) {
+                localStorage.setItem("reservaTemporal", JSON.stringify(formData));
+                window.location.href = `/payment?clientSecret=${encodeURIComponent(clientSecret)}`;
+            } else {
+                throw new Error("No se pudo generar el intento de pago.");
+            }
+        } catch (error) {
+            console.error("Error al generar el intento de pago:", error);
+            alert("No se pudo procesar el pago. Inténtalo de nuevo más tarde.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    
+    
+    
+    
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded shadow-lg w-96">
                 <h2 className="text-lg font-bold mb-4">Crear Reserva</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form  className="space-y-4">
                     {/* Cliente */}
-                    <div>
-                        <label htmlFor="idCliente" className="block text-gray-700 font-bold mb-2">
-                            Cliente
-                        </label>
-                        <select
-                            id="idCliente"
-                            name="idCliente"
-                            value={formData.idCliente}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 p-2 rounded"
-                            required
-                        >
-                            <option value="">Selecciona un cliente</option>
-                            {clientes.map((cliente) => (
-                                <option key={cliente.id} value={cliente.id}>
-                                    {cliente.nombre}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                   {rol === "RECEPCIONISTA" && (
+                     <div>
+                     <label htmlFor="idCliente" className="block text-gray-700 font-bold mb-2">
+                         Cliente
+                     </label>
+                     <select
+                         id="idCliente"
+                         name="idCliente"
+                         value={formData.idCliente}
+                         onChange={handleChange}
+                         className="w-full border border-gray-300 p-2 rounded"
+                         required
+                     >
+                         <option value="">Selecciona un cliente</option>
+                         {clientes.map((cliente) => (
+                             <option key={cliente.id} value={cliente.id}>
+                                 {cliente.nombre}
+                             </option>
+                         ))}
+                     </select>
+                 </div>
+                   )}
 
                     {/* Servicio */}
                     <div>
@@ -199,7 +265,10 @@ const ModalCrearReserva = ({ onClose, slot, onSave }) => {
                             required
                         />
                     </div>
-
+                    {/* Mostrar el Total */}
+                    <div>
+                        <p className="text-gray-700 font-bold">Total: {total.toFixed(2)} €</p>
+                    </div>
                     {/* Botones */}
                     <div className="flex justify-end space-x-4">
                         <button
@@ -209,12 +278,26 @@ const ModalCrearReserva = ({ onClose, slot, onSave }) => {
                         >
                             Cerrar
                         </button>
-                        <button
-                            type="submit"
-                            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                        >
-                            Guardar
-                        </button>
+                        {rol === "RECEPCIONISTA" ? (
+                            <button
+                                type="submit"
+                                onClick={handleGuardarReserva}
+                                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                            >
+                                Guardar
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handlePagarReserva}
+                                className={`bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 ${
+                                    loading ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
+                                disabled={loading}
+                            >
+                                {loading ? "Procesando..." : "Pagar"}
+                            </button>
+                        )}
                     </div>
                 </form>
             </div>

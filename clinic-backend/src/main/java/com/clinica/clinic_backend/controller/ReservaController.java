@@ -79,5 +79,23 @@ public ResponseEntity<?> eliminarReserva(@PathVariable Long id) {
             return ResponseEntity.status(500).body("Error al marcar la reserva como pagada");
         }
     }
-    
+    @GetMapping("/proximas")
+    public ResponseEntity<List<Reserva>> obtenerProximasCitasDelDia() {
+        try {
+            List<Reserva> proximasCitas = reservaService.obtenerProximasCitasDelDia();
+            return ResponseEntity.ok(proximasCitas);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+    @GetMapping("/pendientes-pago")
+public ResponseEntity<?> obtenerCitasPendientesPago() {
+    try {
+        List<Reserva> reservasPendientes = reservaService.obtenerReservasPendientesDePago();
+        return ResponseEntity.ok(reservasPendientes);
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body("Error al obtener citas pendientes de pago.");
+    }
+}
+
 }

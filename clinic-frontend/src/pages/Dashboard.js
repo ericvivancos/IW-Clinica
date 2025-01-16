@@ -1,38 +1,31 @@
 import React from "react";
 import DashboardCliente from "../components/Clientes/DashboardCliente";
-import PrivateRoute from "../components/PrivateRoute";
 import DashboardAdmin from "../components/Administradores/DashboardAdmin";
-// import DashboardAdministrador from "../components/DashboardAdministrador";
+import DashboardRecepcionista from "../components/Recepcionista/DashboardRecepcionista";
+import SaludoUsuario from "../utils/SaludoUsuario";
+import PrivateRoute from "../components/PrivateRoute";
 
 const Dashboard = () => {
     const userRole = localStorage.getItem("role"); // Obtén el rol del usuario
-
-    // Verifica si el usuario está autenticado antes de procesar el rol
+    console.log(userRole);
     if (!userRole) {
         return <PrivateRoute><h1>Redirigiendo...</h1></PrivateRoute>;
     }
 
-    // Renderiza el dashboard correspondiente según el rol
-    switch (userRole) {
-        case "CLIENTE":
-            return (
-                <PrivateRoute requiredRole="CLIENTE">
-                    <DashboardCliente />
-                </PrivateRoute>
-            );
-        case "ADMINISTRADOR":
-            return (
-                <PrivateRoute requiredRole="ADMINISTRADOR">
-                    <DashboardAdmin />
-                </PrivateRoute>
-            );
-        default:
-            return (
-                <PrivateRoute>
-                    <h1>Rol no reconocido</h1>
-                </PrivateRoute>
-            );
-    }
+    return (
+        <PrivateRoute requiredRole={userRole}>
+            <div className="min-h-screen bg-gray-100">
+                {/* Contenido común del dashboard */}
+                <div className="container mx-auto px-4 py-8">
+                    <SaludoUsuario />
+                    {/* Renderiza el dashboard específico */}
+                    {userRole === "CLIENTE" && <DashboardCliente />}
+                    {userRole === "ADMINISTRADOR" && <DashboardAdmin />}
+                    {userRole === "RECEPCIONISTA" && <DashboardRecepcionista />}
+                </div>
+            </div>
+        </PrivateRoute>
+    );
 };
 
 export default Dashboard;

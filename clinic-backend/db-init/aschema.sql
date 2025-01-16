@@ -46,26 +46,26 @@ CREATE TABLE reservas (
 
 -- Inserta un administrador
 INSERT INTO usuarios (nombre, email, contrasena, rol, activo)
-VALUES ('Administrador', 'admin@clinica.com', '$2a$10$U4QCZbPd4Njv.XbqcMEczOayD9rD7AVgD8aE2L2vBSh0RvgiV51dK', 'ADMINISTRADOR', true);
+VALUES ('Administrador', 'admin@clinica.com', '$2a$10$z9J04wxfw8/QbgFOGuaa2O0CvbSAVWLEZb7YZRQU/m7EOw7IdVhHe', 'ADMINISTRADOR', true);
 -- Contraseña: admin123 (encriptada con BCrypt)
 
 -- Inserta clientes
 INSERT INTO usuarios (nombre, email, contrasena, rol, activo)
 VALUES 
-('Cliente 1', 'cliente1@correo.com', '$2a$10$U4QCZbPd4Njv.XbqcMEczOayD9rD7AVgD8aE2L2vBSh0RvgiV51dK', 'CLIENTE', true),
-('Cliente 2', 'cliente2@correo.com', '$2a$10$U4QCZbPd4Njv.XbqcMEczOayD9rD7AVgD8aE2L2vBSh0RvgiV51dK', 'CLIENTE', true);
+('Cliente 1', 'cliente1@correo.com', '$2a$10$NI9sUp0sedoiA3L0HYaXtObnZw.2Ue9d8/bZ4olcTQLvLRqmyhSGi', 'CLIENTE', true),
+('Cliente 2', 'cliente2@correo.com', '$2a$10$NI9sUp0sedoiA3L0HYaXtObnZw.2Ue9d8/bZ4olcTQLvLRqmyhSGi', 'CLIENTE', true);
 
 -- Inserta profesionales
 INSERT INTO usuarios (nombre, email, contrasena, rol, activo)
 VALUES 
-('Profesional 1', 'profesional1@correo.com', '$2a$10$U4QCZbPd4Njv.XbqcMEczOayD9rD7AVgD8aE2L2vBSh0RvgiV51dK', 'PROFESIONAL', true),
-('Profesional 2', 'profesional2@correo.com', '$2a$10$U4QCZbPd4Njv.XbqcMEczOayD9rD7AVgD8aE2L2vBSh0RvgiV51dK', 'PROFESIONAL', true);
+('Profesional 1', 'profesional1@correo.com', '$2a$10$NI9sUp0sedoiA3L0HYaXtObnZw.2Ue9d8/bZ4olcTQLvLRqmyhSGi', 'PROFESIONAL', true),
+('Profesional 2', 'profesional2@correo.com', '$2a$10$NI9sUp0sedoiA3L0HYaXtObnZw.2Ue9d8/bZ4olcTQLvLRqmyhSGi', 'PROFESIONAL', true);
 
 -- Inserta recepcionistas
 INSERT INTO usuarios (nombre, email, contrasena, rol, activo)
 VALUES 
-('Recepcionista 1', 'recepcionista1@correo.com', '$2a$10$U4QCZbPd4Njv.XbqcMEczOayD9rD7AVgD8aE2L2vBSh0RvgiV51dK', 'RECEPCIONISTA', true),
-('Recepcionista 2', 'recepcionista2@correo.com', '$2a$10$U4QCZbPd4Njv.XbqcMEczOayD9rD7AVgD8aE2L2vBSh0RvgiV51dK', 'RECEPCIONISTA', true);
+('Recepcionista 1', 'recepcionista1@correo.com', '$2a$10$NI9sUp0sedoiA3L0HYaXtObnZw.2Ue9d8/bZ4olcTQLvLRqmyhSGi', 'RECEPCIONISTA', true),
+('Recepcionista 2', 'recepcionista2@correo.com', '$2a$10$NI9sUp0sedoiA3L0HYaXtObnZw.2Ue9d8/bZ4olcTQLvLRqmyhSGi', 'RECEPCIONISTA', true);
 
 -- Inserta servicios
 INSERT INTO servicios (nombre, descripcion, precio_por_hora)
@@ -80,3 +80,5 @@ VALUES
 ('Sala 1', 'Sala para consultas generales.'),
 ('Sala 2', 'Sala para procedimientos dentales.'),
 ('Sala 3', 'Sala para fisioterapia.');
+
+

@@ -35,8 +35,18 @@ const ListaUsuarios = () => {
             setUsuarios(data);
             setMostrarModalCrear(false); // Cierra el modal
         } catch (error) {
-            console.error("Error al crear el usuario:", error.response.data.errors[0].defaultMessage);
-            alert("Error al crear el usuario.", error.response.data.errors[0].defaultMessage);
+            if (error.response && error.response.data) {
+                if (typeof error.response.data === "object") {
+                    // Procesar mensajes de error de validación
+                    const errores = Object.values(error.response.data).join(" ");
+                    alert(`Error al crear el usuario: ${errores}`);
+                } else {
+                    // Manejar mensajes generales
+                    setError(error.response.data.message || "Error desconocido.");
+                    alert("Error al crear el usuario.", error.response.data.message );
+                }
+            }
+            
         }
     };
     const handleEditarUsuario = async (id, formData) => {
@@ -47,8 +57,16 @@ const ListaUsuarios = () => {
             setMostrarModalEditar(false);
             alert("Usuario actualizado exitosamente.");
         } catch (error) {
-            console.error("Error al editar el usuario:", error.response.data.errors[0].defaultMessage);
-            alert("Error al editar el usuario.", error.response.data.errors[0].defaultMessage);
+            if (error.response && error.response.data) {
+                if (typeof error.response.data === "object") {
+                    // Procesar mensajes de error de validación
+                    const errores = Object.values(error.response.data).join(" ");
+                    alert(`Error al crear el usuario: ${errores}`);
+                } else {
+                    // Manejar mensajes generales
+                    alert("Error al crear el usuario :", error.response.data.message );
+                }
+            }
         }
     };
     const handleEliminarUsuario = async (id) => {

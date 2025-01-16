@@ -4,10 +4,13 @@ import com.clinica.clinic_backend.dto.EditarUsuarioDTO;
 import com.clinica.clinic_backend.dto.LoginRequestDTO;
 import com.clinica.clinic_backend.dto.LoginResponseDTO;
 import com.clinica.clinic_backend.dto.RegistroUsuarioDTO;
+import com.clinica.clinic_backend.model.Reserva;
 import com.clinica.clinic_backend.model.Usuario;
+import com.clinica.clinic_backend.repository.ReservaRepository;
 import com.clinica.clinic_backend.repository.UsuarioRepository;
 import com.clinica.clinic_backend.security.JwtUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +28,9 @@ public class UsuarioService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     
+    @Autowired 
+    private ReservaRepository reservaRepository;
+
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -156,5 +162,13 @@ public class UsuarioService {
     public List<Usuario> obtenerUsuariosPorRol(Usuario.Rol rol) {
         return usuarioRepository.findByRol(rol);
     }
-    
+    public Reserva obtenerProximaCita(String email) {
+        // Buscar el usuario por su email
+        Usuario cliente = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+
+        // Buscar la próxima cita para este cliente
+        return reservaRepository.findFirstByClienteAndFechaAfterOrderByFechaAscHoraInicioAsc(cliente, LocalDate.now())
+                .orElseThrow(() -> new IllegalArgumentException("No hay citas próximas programadas."));
+    }
 }

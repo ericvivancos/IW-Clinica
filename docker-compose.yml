@@ -43,12 +43,9 @@ services:
       - "3000:3000"
     volumes:
       - ./clinic-frontend:/app # Monta el código fuente local
-      - /app/node_modules # Evita conflictos con los módulos de Node.js
-    stdin_open: true
-    tty: true
-
-
-  
+      - /app/node_modules # Evita problemas con dependencias
+    depends_on:
+      - backend
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
